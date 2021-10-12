@@ -31,14 +31,18 @@ int queue_size (queue_t *queue){
 
 void queue_print (char *name, queue_t *queue, void print_elem (void*)){
 
+	printf("%s[", name);
+	if (queue){
 		queue_t *first = queue;
-		printf("\n");
-		while(first != queue){
-				print_elem(first);
-				first = first->next;
+		do{
+			if (first != queue){
 				printf(" ");
-		}
-		printf("\n");
+			}
+			print_elem(first);
+			first = first->next;
+		}while(first != queue);
+	}
+	printf("]\n");
 }
 
 //------------------------------------------------------------------------------
@@ -51,12 +55,18 @@ void queue_print (char *name, queue_t *queue, void print_elem (void*)){
 
 int queue_append (queue_t **queue, queue_t *elem){
 	
-	if(queue == NULL)
+	if(queue == NULL){
+		fprintf(stderr, "%s", "queue nao existe\n");
 		return -1;
-	if(elem == NULL)
+	}
+	if(elem == NULL){
+		fprintf(stderr, "%s", "elem nao existe\n");
 		return -1;
-	if(elem-> next || elem->prev)
+	}
+	if(elem-> next || elem->prev){
+		fprintf(stderr, "%s", "elem esta em outra fila\n");
 		return -1;
+	}
 	if(*queue == NULL){
 		*queue = elem;
 		(*queue)->next = (*queue);	
@@ -84,20 +94,32 @@ int queue_append (queue_t **queue, queue_t *elem){
 
 int queue_remove (queue_t **queue, queue_t *elem){
 	
-	if(queue == NULL)
+	if(queue == NULL){
+		fprintf(stderr, "%s", "queue não existe\n");
 		return -1;
-	else if(*queue == NULL)
+	}
+	if(*queue == NULL){
+		fprintf(stderr, "%s", "queue vazia\n");
 		return -1;
-	else if(elem == NULL)
+	}
+	if(elem == NULL){
+		fprintf(stderr, "%s", "elem nao existe\n");
 		return -1;
+	}
 	queue_t *first = *queue;
 	int cont = 0;
-	while(first->next != *queue){
-		if(first == elem)
-			cont++;		
-	}
-	if(cont > 0)
+	do{
+      if (first == elem){
+        cont = 1;
+        break;
+      }
+      first = first->next;
+    }while (first != *queue);
+
+	if(cont == 0){
+		fprintf(stderr, "%s", "elem nao esta na fila\n");
 		return -1;
+	}
 	else if (elem->next == elem && elem->prev == elem){
         elem->next = NULL;
         elem->prev = NULL;
